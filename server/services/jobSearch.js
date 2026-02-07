@@ -78,7 +78,8 @@ async function searchJobs(skills, options = {}) {
         query: manualQuery,        // Manual search query override
         experienceLevel,           // Experience level filter
         jobType,                   // Job type filter
-        datePosted = 'month'       // Date posted filter
+        datePosted = 'month',      // Date posted filter
+        seniority: resumeSeniority // Seniority from resume analysis
     } = options;
 
     let aiAnalysis = null;
@@ -92,6 +93,12 @@ async function searchJobs(skills, options = {}) {
         // Use AI to analyze and get better search queries
         aiAnalysis = await analyzeResumeForJobSearch(skills, experience, rawText);
 
+        // IMPORTANT: If seniority was passed from resume analysis, use it instead of AI's re-analysis
+        if (resumeSeniority) {
+            console.log('📋 Using seniority from resume analysis:', resumeSeniority);
+            aiAnalysis.seniority = resumeSeniority;
+        }
+
         // Create search query - prioritize AI job titles, fall back to skills
         if (aiAnalysis.jobTitles && aiAnalysis.jobTitles.length > 0) {
             query = aiAnalysis.jobTitles.slice(0, 2).join(' OR ');
@@ -104,8 +111,15 @@ async function searchJobs(skills, options = {}) {
 
     if (location) query += ` in ${location}`;
 
+    // Add seniority-based keywords to the search query for better matching
+    const seniority = resumeSeniority || aiAnalysis?.seniority || experienceLevel || 'mid';
+    const seniorityKeywords = getSeniorityKeywords(seniority);
+    if (seniorityKeywords.queryModifier) {
+        query = `${seniorityKeywords.queryModifier} ${query}`;
+    }
+
     console.log('🔍 Search query:', query);
-    console.log('📊 Filters:', { experienceLevel, jobType, datePosted, remote });
+    console.log('📊 Filters:', { experienceLevel: seniorityKeywords.apiFilter, jobType, datePosted, remote, seniority });
 
     try {
         // Build API params
@@ -117,9 +131,9 @@ async function searchJobs(skills, options = {}) {
             remote_jobs_only: remote.toString()
         };
 
-        // Add optional filters
-        if (experienceLevel) {
-            params.job_requirements = experienceLevel;
+        // Add experience level filter based on seniority
+        if (seniorityKeywords.apiFilter) {
+            params.job_requirements = seniorityKeywords.apiFilter;
         }
         if (jobType) {
             params.employment_types = jobType;
@@ -202,6 +216,36 @@ function formatSalary(min, max, currency = 'USD') {
     if (min && max) return `${currency} ${min.toLocaleString()} - ${max.toLocaleString()}`;
     if (min) return `${currency} ${min.toLocaleString()}+`;
     return `Up to ${currency} ${max.toLocaleString()}`;
+}
+
+/**
+ * Get seniority-based keywords for search query and API filter
+ */
+function getSeniorityKeywords(seniority) {
+    const seniorityMap = {
+        'junior': {
+            queryModifier: 'junior OR entry level OR graduate',
+            apiFilter: null  // Don't filter - let query keywords do the work
+        },
+        'mid': {
+            queryModifier: '',  // No modifier for mid-level (default)
+            apiFilter: null  // Don't filter - shows all experience levels
+        },
+        'senior': {
+            queryModifier: 'senior',
+            apiFilter: null  // Let query keyword filter
+        },
+        'lead': {
+            queryModifier: 'lead OR principal OR staff',
+            apiFilter: null
+        },
+        'executive': {
+            queryModifier: 'director OR VP OR head of',
+            apiFilter: null
+        }
+    };
+
+    return seniorityMap[seniority?.toLowerCase()] || seniorityMap['mid'];
 }
 
 module.exports = { searchJobs, analyzeResumeForJobSearch };

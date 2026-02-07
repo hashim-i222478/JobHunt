@@ -7,6 +7,7 @@ require('dotenv').config();
 // Import routes
 const resumeRoutes = require('./routes/resume');
 const jobRoutes = require('./routes/jobs');
+const interviewRoutes = require('./routes/interview');
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.get('/api/health', (req, res) => {
 // Routes
 app.use('/api/resume', resumeRoutes);
 app.use('/api/jobs', jobRoutes);
+app.use('/api/interview', interviewRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

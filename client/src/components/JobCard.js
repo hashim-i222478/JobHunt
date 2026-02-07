@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaMapMarkerAlt, FaBriefcase, FaHome, FaMoneyBillWave, FaCheck, FaStar } from 'react-icons/fa';
 
 function JobCard({ job, onSave, isSaved }) {
     const truncateDescription = (text, maxLength = 200) => {
@@ -46,23 +47,23 @@ function JobCard({ job, onSave, isSaved }) {
 
             <div className="job-meta">
                 <span className="meta-item">
-                    📍 {job.location || 'Location not specified'}
+                    <FaMapMarkerAlt style={{ marginRight: '6px' }} /> {job.location || 'Location not specified'}
                 </span>
                 {job.jobType && (
                     <span className="meta-item job-type">
-                        💼 {job.jobType}
+                        <FaBriefcase style={{ marginRight: '6px' }} /> {job.jobType}
                     </span>
                 )}
                 {job.remote && (
                     <span className="meta-item remote-tag">
-                        🏠 Remote
+                        <FaHome style={{ marginRight: '6px' }} /> Remote
                     </span>
                 )}
             </div>
 
             {job.salary && job.salary !== 'Not specified' && (
                 <div className="job-salary">
-                    💰 {job.salary}
+                    <FaMoneyBillWave style={{ marginRight: '6px' }} /> {job.salary}
                 </div>
             )}
 
@@ -76,7 +77,7 @@ function JobCard({ job, onSave, isSaved }) {
                     disabled={isSaved}
                     className={`btn btn-save ${isSaved ? 'saved' : ''}`}
                 >
-                    {isSaved ? '✓ Saved' : '⭐ Save'}
+                    {isSaved ? <><FaCheck style={{ marginRight: '4px' }} /> Saved</> : <><FaStar style={{ marginRight: '4px' }} /> Save</>}
                 </button>
                 {job.applyLink && (
                     <a

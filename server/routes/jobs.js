@@ -27,7 +27,8 @@ router.get('/search', async (req, res) => {
             query,           // Manual search query
             experience,      // Experience level filter
             jobType,         // Job type filter (FULLTIME, PARTTIME, etc.)
-            datePosted = 'month'  // Date posted filter
+            datePosted = 'month',  // Date posted filter
+            seniority        // Seniority from resume analysis (to avoid re-analyzing)
         } = req.query;
 
         let searchSkills = [];
@@ -66,7 +67,8 @@ router.get('/search', async (req, res) => {
             query,        // Pass manual query
             experienceLevel: experience,  // Pass experience filter
             jobType,      // Pass job type filter
-            datePosted    // Pass date filter
+            datePosted,   // Pass date filter
+            seniority     // Pass seniority from resume (avoids re-analysis)
         });
 
         res.json({

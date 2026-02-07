@@ -48,6 +48,8 @@ router.post('/upload', upload.single('resume'), async (req, res) => {
             skills: parsedData.skills,
             email: parsedData.email,
             phone: parsedData.phone,
+            links: parsedData.links || {},
+            location: parsedData.location,
             pageCount: parsedData.pageCount,
             // AI Analysis data
             aiAnalysis: parsedData.aiAnalysis || null

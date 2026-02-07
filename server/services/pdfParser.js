@@ -5,6 +5,66 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 /**
+ * Extract actual hyperlink URLs from PDF annotations using pdfjs-dist
+ */
+async function extractHyperlinks(pdfBuffer) {
+    const links = {};
+
+    try {
+        // Dynamically import pdfjs-dist (ESM module)
+        const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
+
+        // Convert Buffer to Uint8Array (required by pdfjs-dist)
+        const uint8Array = new Uint8Array(pdfBuffer);
+
+        // Load the PDF document
+        const loadingTask = pdfjsLib.getDocument({ data: uint8Array });
+        const pdfDoc = await loadingTask.promise;
+
+        // Iterate through all pages
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+            const page = await pdfDoc.getPage(pageNum);
+            const annotations = await page.getAnnotations();
+
+            // Extract link annotations
+            for (const annot of annotations) {
+                if (annot.subtype === 'Link' && annot.url) {
+                    const url = annot.url;
+
+                    // Categorize the link
+                    if (url.includes('linkedin.com')) {
+                        links.linkedin = url;
+                    } else if (url.includes('github.com')) {
+                        links.github = url;
+                    } else if (url.includes('twitter.com') || url.includes('x.com')) {
+                        links.twitter = url;
+                    } else if (url.includes('behance.net')) {
+                        links.behance = url;
+                    } else if (url.includes('dribbble.com')) {
+                        links.dribbble = url;
+                    } else if (url.includes('mailto:')) {
+                        // Skip mailto links, handled separately
+                    } else if (url.includes('tel:')) {
+                        // Skip tel links, handled separately
+                    } else if (url.startsWith('http')) {
+                        // Any other HTTP link is likely a portfolio
+                        if (!links.portfolio) {
+                            links.portfolio = url;
+                        }
+                    }
+                }
+            }
+        }
+
+        console.log('📎 Extracted hyperlinks from PDF:', Object.keys(links).length > 0 ? links : 'None found');
+    } catch (error) {
+        console.warn('Could not extract hyperlinks:', error.message);
+    }
+
+    return links;
+}
+
+/**
  * Parse PDF buffer and extract text content
  */
 async function parsePDF(pdfBuffer) {
@@ -12,12 +72,15 @@ async function parsePDF(pdfBuffer) {
         const data = await pdfParse(pdfBuffer);
         const text = data.text;
 
-        // Basic extraction
+        // Basic extraction from text
         const basicSkills = extractSkills(text);
         const email = extractEmail(text);
         const phone = extractPhone(text);
-        const links = extractLinks(text);
+        const textLinks = extractLinks(text);
         const location = extractLocation(text);
+
+        // Extract actual hyperlinks from PDF annotations
+        const pdfHyperlinks = await extractHyperlinks(pdfBuffer);
 
         // AI Analysis (if API key available)
         let aiAnalysis = null;
@@ -28,12 +91,19 @@ async function parsePDF(pdfBuffer) {
         // Use AI-detected location if available, fallback to regex extraction
         const detectedLocation = aiAnalysis?.location || location;
 
+        // Merge links: PDF hyperlinks take priority > AI links > regex text links
+        const mergedLinks = {
+            ...textLinks,
+            ...cleanLinks(aiAnalysis?.professionalLinks || {}),
+            ...pdfHyperlinks  // PDF hyperlinks have highest priority (most accurate)
+        };
+
         return {
             rawText: text,
             skills: aiAnalysis?.categorizedSkills ? flattenSkills(aiAnalysis.categorizedSkills) : basicSkills,
             email,
             phone,
-            links,
+            links: mergedLinks,
             location: detectedLocation,
             pageCount: data.numpages,
             aiAnalysis: aiAnalysis || {
@@ -73,6 +143,14 @@ Return this exact JSON structure:
     "Tools & Platforms": ["skill1", "skill2"],
     "Soft Skills": ["skill1", "skill2"]
   },
+  "professionalLinks": {
+    "linkedin": "full LinkedIn URL if mentioned or can be inferred",
+    "github": "full GitHub URL if mentioned or can be inferred",
+    "portfolio": "full portfolio/personal website URL if mentioned",
+    "twitter": "full Twitter/X URL if mentioned",
+    "behance": "full Behance URL if mentioned",
+    "dribbble": "full Dribbble URL if mentioned"
+  },
   "timeline": [
     {
       "type": "work",
@@ -96,6 +174,7 @@ Rules:
 - categorizedSkills should only include skills ACTUALLY mentioned in the resume
 - timeline should be in reverse chronological order (most recent first)
 - location should be the candidate's current location (city, country/state)
+- professionalLinks: Extract any URLs you can find, even partial ones. Look for text like "LinkedIn", "GitHub", "Portfolio" near URLs. If you see a username near these words, construct the full URL (e.g., "github.com/username")
 - Keep summary concise but insightful
 - Return ONLY the JSON object, nothing else`;
 
@@ -144,6 +223,44 @@ function flattenSkills(categorizedSkills) {
         }
     }
     return [...new Set(allSkills)];
+}
+
+/**
+ * Clean and validate AI-extracted links (remove placeholders and invalid entries)
+ */
+function cleanLinks(aiLinks) {
+    const cleaned = {};
+    const placeholderPatterns = [
+        /^full\s+/i,
+        /if\s+mentioned/i,
+        /can\s+be\s+inferred/i,
+        /null/i,
+        /undefined/i,
+        /^n\/a$/i,
+        /not\s+found/i,
+        /not\s+mentioned/i
+    ];
+
+    for (const [key, value] of Object.entries(aiLinks)) {
+        if (!value || typeof value !== 'string') continue;
+
+        // Skip if it's a placeholder text
+        const isPlaceholder = placeholderPatterns.some(p => p.test(value));
+        if (isPlaceholder) continue;
+
+        // Must contain a valid URL pattern
+        if (value.includes('.com') || value.includes('.io') || value.includes('.dev') ||
+            value.includes('.me') || value.includes('.co') || value.includes('.net') ||
+            value.includes('.org')) {
+            // Ensure it starts with http
+            let url = value.trim();
+            if (!url.startsWith('http')) {
+                url = 'https://' + url;
+            }
+            cleaned[key] = url;
+        }
+    }
+    return cleaned;
 }
 
 /**

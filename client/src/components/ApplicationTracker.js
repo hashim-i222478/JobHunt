@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FaStar, FaPencilAlt, FaMicrophone, FaTrophy, FaTimes, FaBan, FaExclamationTriangle, FaClipboardList, FaMapMarkerAlt } from 'react-icons/fa';
 
 const API_URL = 'http://localhost:5000/api';
 
 const STATUS_CONFIG = {
-    saved: { label: 'Saved', color: '#6366f1', icon: '⭐' },
-    applied: { label: 'Applied', color: '#3b82f6', icon: '📝' },
-    interviewing: { label: 'Interviewing', color: '#f59e0b', icon: '🎤' },
-    offered: { label: 'Offered', color: '#10b981', icon: '🎉' },
-    rejected: { label: 'Rejected', color: '#ef4444', icon: '❌' },
-    withdrawn: { label: 'Withdrawn', color: '#6b7280', icon: '🚫' }
+    saved: { label: 'Saved', color: '#6366f1', icon: <FaStar /> },
+    applied: { label: 'Applied', color: '#3b82f6', icon: <FaPencilAlt /> },
+    interviewing: { label: 'Interviewing', color: '#f59e0b', icon: <FaMicrophone /> },
+    offered: { label: 'Offered', color: '#10b981', icon: <FaTrophy /> },
+    rejected: { label: 'Rejected', color: '#ef4444', icon: <FaTimes /> },
+    withdrawn: { label: 'Withdrawn', color: '#6b7280', icon: <FaBan /> }
 };
 
 function ApplicationTracker() {
@@ -111,13 +112,13 @@ function ApplicationTracker() {
 
             {error && (
                 <div className="error-message">
-                    <span>⚠️</span> {error}
+                    <span><FaExclamationTriangle /></span> {error}
                 </div>
             )}
 
             {filteredApps.length === 0 ? (
                 <div className="empty-state">
-                    <span className="empty-icon">📋</span>
+                    <span className="empty-icon"><FaClipboardList /></span>
                     <h3>No applications {filter !== 'all' ? `with "${STATUS_CONFIG[filter]?.label}" status` : 'yet'}</h3>
                     <p>
                         {filter === 'all'
@@ -149,7 +150,7 @@ function ApplicationTracker() {
                                     <div className="app-info">
                                         <h3 className="app-title">{app.title}</h3>
                                         <p className="app-company">{app.company}</p>
-                                        <p className="app-location">📍 {app.location}</p>
+                                        <p className="app-location"><FaMapMarkerAlt style={{ marginRight: '6px' }} /> {app.location}</p>
                                     </div>
                                 </div>
 

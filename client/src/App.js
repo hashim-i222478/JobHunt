@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-do
 import ResumeUpload from './components/ResumeUpload';
 import JobList from './components/JobList';
 import ApplicationTracker from './components/ApplicationTracker';
+import InterviewPrep from './components/InterviewPrep';
+import Logo from './Logo.png';
 import './App.css';
 
 function App() {
@@ -16,7 +18,7 @@ function App() {
         <header className="header">
           <div className="header-content">
             <h1 className="logo">
-              <span className="logo-icon">🎯</span>
+              <img src={Logo} alt="JobHunt AI Logo" className="logo-image" />
               JobHunt<span className="accent">AI</span>
             </h1>
             <nav className="nav">
@@ -25,6 +27,9 @@ function App() {
               </NavLink>
               <NavLink to="/jobs" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                 Find Jobs
+              </NavLink>
+              <NavLink to="/interview" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                Interview Prep
               </NavLink>
               <NavLink to="/tracker" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                 Tracker
@@ -58,6 +63,10 @@ function App() {
               }
             />
             <Route
+              path="/interview"
+              element={<InterviewPrep resumeData={resumeData} />}
+            />
+            <Route
               path="/tracker"
               element={<ApplicationTracker />}
             />
@@ -73,3 +82,4 @@ function App() {
 }
 
 export default App;
+

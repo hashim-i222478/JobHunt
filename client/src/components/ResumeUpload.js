@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { FaFileAlt, FaRobot, FaSearch, FaBriefcase, FaGraduationCap, FaTools, FaLink, FaExclamationTriangle, FaBullseye, FaCalendarAlt } from 'react-icons/fa';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -12,7 +13,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
     const navigate = useNavigate();
 
     const searchJobsWithSkills = async (skills) => {
-        setStatus('🔍 Finding matching jobs...');
+        setStatus('Finding matching jobs...');
         try {
             const response = await axios.get(`${API_URL}/jobs/search`, {
                 params: { skills: skills.join(',') }
@@ -33,7 +34,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
 
         setUploading(true);
         setError(null);
-        setStatus('🤖 AI is analyzing your resume...');
+        setStatus('AI is analyzing your resume...');
 
         const formData = new FormData();
         formData.append('resume', file);
@@ -91,7 +92,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                             </>
                         ) : (
                             <>
-                                <div className="upload-icon">📄</div>
+                                <div className="upload-icon"><FaFileAlt /></div>
                                 <h3>{isDragActive ? 'Drop your resume here' : 'Drag & drop your resume'}</h3>
                                 <p>or click to browse</p>
                                 <span className="file-hint">PDF files only, max 10MB</span>
@@ -105,7 +106,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                     <div className="compact-upload">
                         <input {...getInputProps()} />
                         <div className="current-file">
-                            <span className="file-icon">📄</span>
+                            <span className="file-icon"><FaFileAlt /></span>
                             <span className="file-name">{resumeData.fileName}</span>
                         </div>
                         <button type="button" onClick={open} className="btn btn-outline">
@@ -117,7 +118,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                     {aiAnalysis?.summary && (
                         <div className="ai-summary-card">
                             <div className="summary-header">
-                                <span className="ai-badge">🤖 AI Summary</span>
+                                <span className="ai-badge"><FaRobot style={{ marginRight: '6px' }} /> AI Summary</span>
                                 {aiAnalysis?.seniorityLevel && (
                                     <span className="seniority-tag">{aiAnalysis.seniorityLevel.toUpperCase()}</span>
                                 )}
@@ -129,11 +130,11 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                     {/* Suggested Roles */}
                     {aiAnalysis?.suggestedRoles?.length > 0 && (
                         <div className="analysis-section">
-                            <h3>🎯 Recommended Roles</h3>
+                            <h3><FaBullseye style={{ marginRight: '8px' }} /> Recommended Roles</h3>
                             <div className="roles-grid">
                                 {aiAnalysis.suggestedRoles.map((role, index) => (
                                     <div key={index} className="role-card">
-                                        <span className="role-icon">💼</span>
+                                        <span className="role-icon"><FaBriefcase /></span>
                                         <span className="role-title">{role}</span>
                                     </div>
                                 ))}
@@ -144,7 +145,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                     {/* Categorized Skills */}
                     {aiAnalysis?.categorizedSkills && (
                         <div className="analysis-section">
-                            <h3>🛠️ Skills by Category</h3>
+                            <h3><FaTools style={{ marginRight: '8px' }} /> Skills by Category</h3>
                             <div className="skills-categories">
                                 {Object.entries(aiAnalysis.categorizedSkills).map(([category, skills]) => (
                                     skills?.length > 0 && (
@@ -165,12 +166,12 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                     {/* Experience Timeline */}
                     {aiAnalysis?.timeline?.length > 0 && (
                         <div className="analysis-section">
-                            <h3>📅 Experience Timeline</h3>
+                            <h3><FaCalendarAlt style={{ marginRight: '8px' }} /> Experience Timeline</h3>
                             <div className="timeline">
                                 {aiAnalysis.timeline.map((item, index) => (
                                     <div key={index} className={`timeline-item ${item.type}`}>
                                         <div className="timeline-marker">
-                                            {item.type === 'work' ? '💼' : '🎓'}
+                                            {item.type === 'work' ? <FaBriefcase /> : <FaGraduationCap />}
                                         </div>
                                         <div className="timeline-content">
                                             <div className="timeline-header">
@@ -195,7 +196,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                     {/* Contact & Links */}
                     {(resumeData.email || resumeData.phone || resumeData.links) && (
                         <div className="analysis-section contact-section">
-                            <h3>🔗 Contact & Links</h3>
+                            <h3><FaLink style={{ marginRight: '8px' }} /> Contact & Links</h3>
                             <div className="contact-links-grid">
                                 {resumeData.email && (
                                     <a href={`mailto:${resumeData.email}`} className="contact-link-card">
@@ -295,7 +296,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                             onClick={() => navigate('/jobs')}
                             className="btn btn-primary btn-large"
                         >
-                            🔍 Find Matching Jobs
+                            <FaSearch style={{ marginRight: '8px' }} /> Find Matching Jobs
                         </button>
                     </div>
                 </>
@@ -303,7 +304,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
 
             {error && (
                 <div className="error-message">
-                    <span>⚠️</span> {error}
+                    <span><FaExclamationTriangle /></span> {error}
                 </div>
             )}
         </div>

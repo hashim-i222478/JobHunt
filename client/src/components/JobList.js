@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import JobCard from './JobCard';
+import { FaRobot, FaSearch, FaCog, FaFileAlt, FaExclamationTriangle, FaDownload, FaSyncAlt, FaBolt, FaRocket, FaClipboardList } from 'react-icons/fa';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -58,6 +59,9 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
     // Get device location on mount if no location set
     useEffect(() => {
         const getDeviceLocation = async () => {
+            // Only set location if it's empty (don't override user's manual changes)
+            if (location) return;
+
             // First check if resume has location
             if (resumeData?.location) {
                 setLocation(resumeData.location);
@@ -65,7 +69,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
             }
 
             // Try to get device location
-            if (navigator.geolocation && !location) {
+            if (navigator.geolocation) {
                 setGettingLocation(true);
                 try {
                     const position = await new Promise((resolve, reject) => {
@@ -99,7 +103,8 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
         };
 
         getDeviceLocation();
-    }, [resumeData, location]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [resumeData]);
 
     // Populate suggested role from resume
     useEffect(() => {
@@ -162,6 +167,10 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
             } else {
                 params.skills = resumeData.skills.join(',');
                 params.rawText = resumeData.aiAnalysis?.summary || '';
+                // Pass seniority level from resume analysis to avoid re-analyzing
+                if (resumeData.aiAnalysis?.seniorityLevel) {
+                    params.seniority = resumeData.aiAnalysis.seniorityLevel;
+                }
             }
 
             const response = await axios.get(`${API_URL}/jobs/search`, { params });
@@ -260,6 +269,22 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
         setAiInsights(null);
     };
 
+    const handleModeSwitch = (mode) => {
+        if (mode !== searchMode) {
+            // Clear jobs and insights when switching modes
+            setJobs([]);
+            setAiInsights(null);
+            setHasSearched(false);
+            setPage(1);
+            setHasMore(true);
+            setError(null);
+            // Reset filters
+            setFilterJobType('');
+            setFilterRemote(false);
+        }
+        setSearchMode(mode);
+    };
+
     return (
         <div className="job-list-page">
             <div className="page-header">
@@ -275,15 +300,15 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
             <div className="search-mode-toggle">
                 <button
                     className={`mode-btn ${searchMode === 'ai' ? 'active' : ''}`}
-                    onClick={() => setSearchMode('ai')}
+                    onClick={() => handleModeSwitch('ai')}
                 >
-                    🤖 AI-Powered Search
+                    <FaRobot style={{ marginRight: '6px' }} /> AI-Powered Search
                 </button>
                 <button
                     className={`mode-btn ${searchMode === 'manual' ? 'active' : ''}`}
-                    onClick={() => setSearchMode('manual')}
+                    onClick={() => handleModeSwitch('manual')}
                 >
-                    🔍 Manual Search
+                    <FaSearch style={{ marginRight: '6px' }} /> Manual Search
                 </button>
             </div>
 
@@ -327,7 +352,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
                             className="btn btn-outline btn-filters"
                             onClick={() => setShowAdvanced(!showAdvanced)}
                         >
-                            ⚙️ Filters {showAdvanced ? '▲' : '▼'}
+                            <FaCog style={{ marginRight: '6px' }} /> Filters {showAdvanced ? '▲' : '▼'}
                         </button>
                     )}
                     <button
@@ -335,7 +360,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
                         disabled={loading || gettingLocation}
                         className="btn btn-primary"
                     >
-                        {loading ? 'Searching...' : '🔍 Find Jobs'}
+                        {loading ? 'Searching...' : <><FaSearch style={{ marginRight: '6px' }} /> Find Jobs</>}
                     </button>
                 </div>
             </div>
@@ -380,20 +405,10 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
                 </div>
             )}
 
-            {/* Job Sources Banner */}
-            <div className="job-sources-banner">
-                <span className="sources-label">Searching across:</span>
-                <div className="sources-list">
-                    {jobSources.map((source, i) => (
-                        <span key={i} className="source-badge">{source}</span>
-                    ))}
-                </div>
-            </div>
-
             {/* AI Insights Panel */}
             {aiInsights && searchMode === 'ai' && (
                 <div className="ai-insights">
-                    <h3>🤖 AI Search Analysis</h3>
+                    <h3><FaRobot style={{ marginRight: '8px' }} /> AI Search Analysis</h3>
                     <div className="insights-grid">
                         {aiInsights.jobTitles?.length > 0 && (
                             <div className="insight-card">
@@ -427,7 +442,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
 
             {!resumeData && searchMode === 'ai' && (
                 <div className="info-banner">
-                    <span>📄</span>
+                    <span><FaFileAlt /></span>
                     <p>
                         <a href="/">Upload your resume</a> for AI-powered matching, or switch to <strong>Manual Search</strong> to search by job title.
                     </p>
@@ -436,7 +451,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
 
             {error && (
                 <div className="error-message">
-                    <span>⚠️</span> {error}
+                    <span><FaExclamationTriangle /></span> {error}
                 </div>
             )}
 
@@ -444,7 +459,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
                 <div className="loading-state">
                     <div className="spinner"></div>
                     <h3>Finding Jobs in {location || 'your area'}</h3>
-                    <p>🤖 {searchMode === 'ai' ? 'AI is analyzing jobs' : `Searching for "${manualQuery}"`}...</p>
+                    <p><FaRobot style={{ marginRight: '6px' }} /> {searchMode === 'ai' ? 'AI is analyzing jobs' : `Searching for "${manualQuery}"`}...</p>
                     <div className="loading-sources">
                         {jobSources.map((source, i) => (
                             <span key={i} className="loading-source" style={{ animationDelay: `${i * 0.2}s` }}>
@@ -467,9 +482,9 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
                         </div>
                         <div className="results-actions">
                             <button className="btn btn-outline btn-small" onClick={handleNewSearch}>
-                                🔄 New Search
+                                <FaSyncAlt style={{ marginRight: '6px' }} /> New Search
                             </button>
-                            <span className="sort-info">⚡ Sorted by match</span>
+                            <span className="sort-info"><FaBolt style={{ marginRight: '4px' }} /> Sorted by match</span>
                         </div>
                     </div>
 
@@ -531,7 +546,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
                                     </>
                                 ) : (
                                     <>
-                                        📥 Load More Jobs
+                                        <FaDownload style={{ marginRight: '6px' }} /> Load More Jobs
                                     </>
                                 )}
                             </button>
@@ -549,7 +564,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
 
             {!loading && jobs.length === 0 && hasSearched && (
                 <div className="empty-state">
-                    <span className="empty-icon">🔍</span>
+                    <span className="empty-icon"><FaSearch /></span>
                     <h3>No jobs found in {location}</h3>
                     <p>Try a different {searchMode === 'manual' ? 'search term or ' : ''}location</p>
                     <button onClick={handleNewSearch} className="btn btn-secondary">
@@ -560,7 +575,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
 
             {!loading && jobs.length === 0 && !hasSearched && (
                 <div className="empty-state">
-                    <span className="empty-icon">🚀</span>
+                    <img src={require('../Logo.png')} alt="JobHunt AI" className="empty-icon-img" style={{ width: '64px', height: 'auto', marginBottom: '16px', opacity: 0.8 }} />
                     <h3>Ready to find jobs</h3>
                     <p>
                         {searchMode === 'manual'
