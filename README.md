@@ -1,56 +1,47 @@
-# JobHuntAI - Resume-to-Job Matcher & Tracker
+# JobHuntAI - AI-Powered Career Assistant 🚀
 
-JobHuntAI is a full-stack web application designed to streamline the job search process. Users can upload their PDF resumes, which are automatically parsed to extract key skills and roles. The application then matches these profiles with relevant live job listings using the JSearch API and provides a dashboard to track job applications.
+**JobHuntAI** is a comprehensive, AI-driven platform designed to supercharge your job search. It goes beyond simple job matching by acting as your personal career coach—analyzing your resume, finding the perfect roles, tracking your applications, and even preparing you for interviews with AI-simulated questions and feedback.
 
-## 🚀 Features
+![JobHuntAI Dashboard](client/public/logo.png)
 
-- **Resume Parsing**: Automatically extracts text and keywords from PDF resumes.
-- **Smart Job Search**: Finds relevant job listings based on parsed resume data (using JSearch API).
-- **Application Tracking**: Kanban-style or list view to track the status of your applications (Applied, Interviewing, Offer, Rejected).
-- **Modern UI**: Clean, responsive interface built with React and External CSS.
+## ✨ Key Features
+
+### 1. 📄 AI Resume Analysis
+- **Deep Parsing**: Extracts skills, experience, and education from PDF resumes.
+- **Smart Feedback**: AI analyzes your resume to suggest improvements and highlight strengths.
+- **Role Matching**: Automatically suggests job roles that fit your profile.
+
+### 2. 🔍 Intelligent Job Search
+- **AI-Powered Matching**: Finds jobs that actually match your skills and experience level using JSearch API.
+- **Smart Filters**: Filter by remote, full-time, salary, and more.
+- **Match Score**: See how well you fit a job description at a glance.
+
+### 3. 🎯 Interview Preparation
+- **AI Question Generator**: Generates custom interview questions based on your specific skills and target role.
+- **Detailed Sample Answers**: Provides comprehensive, high-quality answers for every question.
+- **Answer Evaluation**: **Submit your own answers** and get instant AI feedback on your strengths, areas for improvement, and a score (0-10).
+- **Mode Toggle**: Practice with different difficulty levels (Easy, Medium, Hard) and categories (Technical, Behavioral, System Design).
+
+### 4. 📊 Application Tracker
+- **Kanban-Style Tracking**: Manage your applications through stages: Saved, Applied, Interviewing, Offer, Rejected.
+- **Statistics**: Visual breakdown of your application progress.
+- **Notes & Updates**: Keep track of interview dates and follow-ups.
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React (Vite), CSS Modules/Vanilla CSS
+- **Frontend**: React.js, CSS Modules ("Obsidian Forge" Design System)
 - **Backend**: Node.js, Express.js
+- **AI Engine**: Groq (Llama 3 70B) for blazing-fast inference
 - **Database**: MongoDB (Mongoose)
-- **External APIs**: JSearch (RapidAPI)
-- **Libraries**: 
-    - `pdf-parse`: For extracting text from PDF resumes.
-    - `axios`: For API requests.
-    - `react-router-dom`: For client-side routing.
-    - `multer`: For handling file uploads.
+- **APIs**: JSearch (RapidAPI) for real-time job listings
 
-## 📂 Project Structure
-
-```
-JobHuntAI/
-├── client/                 # React Frontend
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   └── package.json
-├── server/                 # Node.js Backend
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── uploads/
-│   ├── server.js           # Entry point
-│   └── package.json
-└── README.md
-```
-
-## ⚡ Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
-
-- Node.js (v14 or higher)
-- MongoDB (Local or Atlas connection string)
-- RapidAPI Key for JSearch
+- Node.js (v14+)
+- MongoDB (Running locally or Atlas URI)
+- Groq API Key (for AI features)
+- RapidAPI Key (for JSearch)
 
 ### Installation
 
@@ -65,12 +56,16 @@ JobHuntAI/
     cd server
     npm install
     ```
-    - Create a `.env` file in the `server` directory and add your credentials:
-        ```env
-        PORT=5000
-        MONGODB_URI=mongodb://localhost:27017/jobhuntai
-        RAPIDAPI_KEY=your_rapidapi_key
-        ```
+    Create a `.env` file in `server/`:
+    ```env
+    PORT=5000
+    MONGODB_URI=mongodb://localhost:27017/jobhuntai
+    # Get free key from console.groq.com
+    GROQ_API_KEY=your_groq_api_key
+    # Get from rapidapi.com/letscrape-6bRBa3qPH/api/jsearch
+    RAPIDAPI_KEY=your_rapidapi_key
+    RAPIDAPI_HOST=jsearch.p.rapidapi.com
+    ```
 
 3.  **Setup Frontend:**
     ```bash
@@ -78,40 +73,29 @@ JobHuntAI/
     npm install
     ```
 
-### Running the Application
+### Running the App
 
-1.  **Start the Backend Server:**
+1.  **Start Backend:**
     ```bash
     cd server
     npm run dev
     ```
-    The server will start on `http://localhost:5000`.
+    Server runs on `http://localhost:5000`
 
-2.  **Start the Frontend Client:**
+2.  **Start Frontend:**
     ```bash
     cd client
-    npm run dev
+    npm start
     ```
-    The client will start on `http://localhost:5173`.
+    App opens at `http://localhost:3000`
 
-## 🛣️ API Endpoints
-
-### Resume
-- `POST /api/resume/upload`: Upload and parse a PDF resume.
-
-### Jobs
-- `GET /api/jobs/search?query=...`: Search for jobs using the JSearch API.
-
-### Applications
-- `GET /api/applications`: Get all tracked applications.
-- `POST /api/applications`: Add a new application to track.
-- `PATCH /api/applications/:id`: Update application status.
-- `DELETE /api/applications/:id`: Delete an application.
+## 🔮 Future Roadmap
+- 🎤 **Voice Interview Mode**: Speak your answers and get audio feedback.
+- 📧 **Cold Email Generator**: AI-crafted messages to recruiters.
+- 🗺️ **Career Roadmap**: Visual path to reach your dream role.
 
 ## 🤝 Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
+Contributions are welcome! Fork the repo and submit a PR.
 
 ## 📄 License
-
-This project is licensed under the MIT License.
+MIT License
