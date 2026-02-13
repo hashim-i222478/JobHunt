@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import {
     FaEnvelope, FaPaperPlane, FaCopy, FaCheckCircle, FaExclamationTriangle,
@@ -32,6 +32,30 @@ function ColdEmail({ resumeData }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [copied, setCopied] = useState('');
+
+    const containerRef = useRef(null);
+
+    // Scroll Reveal Logic
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
+        );
+
+        if (containerRef.current) {
+            const elements = containerRef.current.querySelectorAll('.reveal');
+            elements.forEach((el) => observer.observe(el));
+        }
+
+        return () => observer.disconnect();
+    }, [result, resumeData]); // Re-run when content changes
 
     const handleGenerate = async (e) => {
         e.preventDefault();
@@ -73,14 +97,14 @@ function ColdEmail({ resumeData }) {
     };
 
     return (
-        <div className="cold-email-page">
-            <div className="page-header">
+        <div className="cold-email-page" ref={containerRef}>
+            <div className="page-header reveal">
                 <h2><FaEnvelope style={{ marginRight: '12px', color: 'var(--electric)' }} />AI Cold Email Generator</h2>
                 <p>Generate personalized outreach emails that get responses</p>
             </div>
 
             {!resumeData && (
-                <div className="cl-info-banner">
+                <div className="cl-info-banner reveal">
                     <FaExclamationTriangle />
                     <span>Upload your resume first to generate personalized emails</span>
                 </div>
@@ -88,7 +112,7 @@ function ColdEmail({ resumeData }) {
 
             <div className="cold-email-layout">
                 {/* Form */}
-                <form onSubmit={handleGenerate} className="ce-form">
+                <form onSubmit={handleGenerate} className="ce-form reveal" style={{ transitionDelay: '0.1s' }}>
                     {/* Email Type Selector */}
                     <div className="ce-section">
                         <label className="ce-label">Email Type</label>
@@ -188,7 +212,7 @@ function ColdEmail({ resumeData }) {
 
                 {/* Results */}
                 {result && (
-                    <div className="ce-results">
+                    <div className="ce-results reveal" style={{ transitionDelay: '0.2s' }}>
                         {/* Main Email */}
                         <div className="ce-email-card">
                             <div className="ce-email-header">
@@ -253,7 +277,7 @@ function ColdEmail({ resumeData }) {
             </div>
 
             {error && (
-                <div className="error-message">
+                <div className="error-message reveal">
                     <FaExclamationTriangle /> {error}
                 </div>
             )}

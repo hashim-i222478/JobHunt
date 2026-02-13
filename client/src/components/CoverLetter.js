@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FaFileAlt, FaPaperPlane, FaCopy, FaDownload, FaCheckCircle, FaExclamationTriangle, FaBriefcase, FaBuilding, FaUserTie, FaLightbulb, FaStar, FaFire, FaBolt } from 'react-icons/fa';
 
@@ -39,7 +39,31 @@ function CoverLetter({ resumeData }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
+
     const letterRef = useRef(null);
+    const containerRef = useRef(null);
+
+    // Scroll Reveal Logic
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
+        );
+
+        if (containerRef.current) {
+            const elements = containerRef.current.querySelectorAll('.reveal');
+            elements.forEach((el) => observer.observe(el));
+        }
+
+        return () => observer.disconnect();
+    }, [coverLetter, resumeData]); // Re-run when content changes
 
     const handleGenerate = async () => {
         if (!resumeData) {
@@ -142,14 +166,14 @@ function CoverLetter({ resumeData }) {
     };
 
     return (
-        <div className="cover-letter-page">
-            <div className="page-header">
+        <div className="cover-letter-page" ref={containerRef}>
+            <div className="page-header reveal">
                 <h2>AI Cover Letter Generator</h2>
                 <p>Create a tailored, professional cover letter in seconds</p>
             </div>
 
             {!resumeData && (
-                <div className="info-banner">
+                <div className="info-banner reveal">
                     <span><FaFileAlt /></span>
                     <p>
                         <a href="/">Upload your resume</a> first to generate personalized cover letters based on your skills and experience.
@@ -158,7 +182,7 @@ function CoverLetter({ resumeData }) {
             )}
 
             {/* Input Form */}
-            <div className="cl-form-section">
+            <div className="cl-form-section reveal" style={{ transitionDelay: '0.1s' }}>
                 <div className="cl-form-grid">
                     {/* Job Title */}
                     <div className="cl-field">
@@ -256,7 +280,7 @@ function CoverLetter({ resumeData }) {
 
                 {/* Error Message */}
                 {error && (
-                    <div className="error-message" style={{ marginTop: '16px' }}>
+                    <div className="error-message reveal" style={{ marginTop: '16px' }}>
                         <FaExclamationTriangle style={{ marginRight: '8px' }} /> {error}
                     </div>
                 )}
@@ -282,7 +306,7 @@ function CoverLetter({ resumeData }) {
 
             {/* Cover Letter Preview */}
             {coverLetter && (
-                <div className="cl-result-section">
+                <div className="cl-result-section reveal">
                     {/* Action Bar */}
                     <div className="cl-result-header">
                         <h3><FaCheckCircle style={{ color: 'var(--status-success)', marginRight: '8px' }} /> Your Cover Letter is Ready</h3>

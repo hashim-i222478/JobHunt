@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,6 +11,29 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
     const [error, setError] = useState(null);
     const [status, setStatus] = useState('');
     const navigate = useNavigate();
+    const containerRef = useRef(null);
+
+    // Scroll Reveal Logic
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
+        );
+
+        if (containerRef.current) {
+            const elements = containerRef.current.querySelectorAll('.reveal');
+            elements.forEach((el) => observer.observe(el));
+        }
+
+        return () => observer.disconnect();
+    }, [resumeData]); // Re-run when resumeData changes (content appears)
 
     const searchJobsWithSkills = async (skills) => {
         setStatus('Finding matching jobs...');
@@ -66,8 +89,8 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
     const aiAnalysis = resumeData?.aiAnalysis;
 
     return (
-        <div className="resume-upload-page">
-            <div className="page-header">
+        <div className="resume-upload-page" ref={containerRef}>
+            <div className="page-header reveal">
                 <h2>{resumeData ? 'Resume Analysis' : 'Upload Your Resume'}</h2>
                 <p>
                     {resumeData
@@ -81,7 +104,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                 <div
                     {...getRootProps()}
                     onClick={open}
-                    className={`dropzone ${isDragActive ? 'active' : ''} ${uploading ? 'uploading' : ''}`}
+                    className={`dropzone reveal ${isDragActive ? 'active' : ''} ${uploading ? 'uploading' : ''}`}
                 >
                     <input {...getInputProps()} />
                     <div className="dropzone-content">
@@ -103,7 +126,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
             ) : (
                 <>
                     {/* Compact upload button */}
-                    <div className="compact-upload">
+                    <div className="compact-upload reveal">
                         <input {...getInputProps()} />
                         <div className="current-file">
                             <span className="file-icon"><FaFileAlt /></span>
@@ -116,7 +139,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
 
                     {/* AI Summary Card */}
                     {aiAnalysis?.summary && (
-                        <div className="ai-summary-card">
+                        <div className="ai-summary-card reveal" style={{ transitionDelay: '0.1s' }}>
                             <div className="summary-header">
                                 <span className="ai-badge"><FaRobot style={{ marginRight: '6px' }} /> AI Summary</span>
                                 {aiAnalysis?.seniorityLevel && (
@@ -129,7 +152,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
 
                     {/* Suggested Roles */}
                     {aiAnalysis?.suggestedRoles?.length > 0 && (
-                        <div className="analysis-section">
+                        <div className="analysis-section reveal" style={{ transitionDelay: '0.2s' }}>
                             <h3><FaBullseye style={{ marginRight: '8px' }} /> Recommended Roles</h3>
                             <div className="roles-grid">
                                 {aiAnalysis.suggestedRoles.map((role, index) => (
@@ -144,7 +167,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
 
                     {/* Categorized Skills */}
                     {aiAnalysis?.categorizedSkills && (
-                        <div className="analysis-section">
+                        <div className="analysis-section reveal" style={{ transitionDelay: '0.3s' }}>
                             <h3><FaTools style={{ marginRight: '8px' }} /> Skills by Category</h3>
                             <div className="skills-categories">
                                 {Object.entries(aiAnalysis.categorizedSkills).map(([category, skills]) => (
@@ -165,7 +188,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
 
                     {/* Experience Timeline */}
                     {aiAnalysis?.timeline?.length > 0 && (
-                        <div className="analysis-section">
+                        <div className="analysis-section reveal" style={{ transitionDelay: '0.4s' }}>
                             <h3><FaCalendarAlt style={{ marginRight: '8px' }} /> Experience Timeline</h3>
                             <div className="timeline">
                                 {aiAnalysis.timeline.map((item, index) => (
@@ -195,7 +218,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
 
                     {/* Contact & Links */}
                     {(resumeData.email || resumeData.phone || resumeData.links) && (
-                        <div className="analysis-section contact-section">
+                        <div className="analysis-section contact-section reveal" style={{ transitionDelay: '0.5s' }}>
                             <h3><FaLink style={{ marginRight: '8px' }} /> Contact & Links</h3>
                             <div className="contact-links-grid">
                                 {resumeData.email && (
@@ -278,7 +301,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                                 {resumeData.links?.dribbble && (
                                     <a href={resumeData.links.dribbble} target="_blank" rel="noopener noreferrer" className="contact-link-card dribbble">
                                         <svg className="link-icon" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 0C5.375 0 0 5.375 0 12s5.375 12 12 12 12-5.375 12-12S18.625 0 12 0zm7.875 5.55c1.325 1.65 2.15 3.7 2.25 5.925-.325-.075-3.6-.725-6.9-.325-.075-.175-.15-.325-.225-.5-.2-.45-.425-.9-.65-1.325 3.65-1.5 5.3-3.625 5.525-3.775zM12 1.875c2.575 0 4.925.975 6.725 2.55-.175.15-1.675 2.1-5.175 3.425-1.625-2.975-3.425-5.4-3.7-5.775 0 0 .725-.2 2.15-.2zm-4.225.675c.25.35 2.025 2.8 3.675 5.7-4.625 1.225-8.7 1.2-9.15 1.2.625-3.025 2.675-5.55 5.475-6.9zM1.875 12v-.3c.425.025 5.2.075 10.15-1.4.275.55.55 1.125.8 1.675-.125.05-.275.075-.4.125-5.175 1.675-7.925 6.25-8.15 6.575C2.725 16.825 1.875 14.525 1.875 12zM12 22.125c-2.35 0-4.525-.825-6.225-2.2.175-.3 2.2-4.275 7.875-6.25h.075c1.4 3.65 1.975 6.7 2.125 7.575-1.2.55-2.475.875-3.85.875zm5.675-1.775c-.1-.6-.625-3.5-1.95-7.1 3.1-.5 5.825.325 6.15.425-.425 2.75-1.875 5.125-4.2 6.675z" />
+                                            <path d="M12 0C5.375 0 0 5.375 0 12s5.375 12 12 12 12-5.375 12-12S18.625 0 12 0zm7.875 5.55c1.325 1.65 2.15 3.7 2.25 5.925-.325-.075-3.6-.725-6.9-.325-.075-.175-.15-.325-.225-.5-.2-.45-.425-.9-.65-1.325 3.65-1.5 5.3-3.625 5.525-3.775zM12 1.875c2.575 0 4.925.975 6.725 2.55-.175.15-1.675 2.1-5.175 3.425-1.625-2.975-3.425-5.4-3.7-5.775 0 0 .725-.2 2.15-.2zm-4.225.675c.25.35 2.025 2.8 3.675 5.7-4.625 1.225-8.7 1.2-9.15 1.2.625-3.025 2.675-5.55 5.475-6.9zM1.875 12v-.3c.425.025 5.2.075 10.15-1.4.275.55.125.1.8 1.675-.125.05-.275.075-.4.125-5.175 1.675-7.925 6.25-8.15 6.575C2.725 16.825 1.875 14.525 1.875 12zM12 22.125c-2.35 0-4.525-.825-6.225-2.2.175-.3 2.2-4.275 7.875-6.25h.075c1.4 3.65 1.975 6.7 2.125 7.575-1.2.55-2.475.875-3.85.875zm5.675-1.775c-.1-.6-.625-3.5-1.95-7.1 3.1-.5 5.825.325 6.15.425-.425 2.75-1.875 5.125-4.2 6.675z" />
                                         </svg>
                                         <div className="link-details">
                                             <span className="link-label">Dribbble</span>
@@ -291,7 +314,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                     )}
 
                     {/* Action Button */}
-                    <div className="preview-actions">
+                    <div className="preview-actions reveal" style={{ transitionDelay: '0.6s' }}>
                         <button
                             onClick={() => navigate('/jobs')}
                             className="btn btn-primary btn-large"
@@ -303,7 +326,7 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
             )}
 
             {error && (
-                <div className="error-message">
+                <div className="error-message reveal">
                     <span><FaExclamationTriangle /></span> {error}
                 </div>
             )}

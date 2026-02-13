@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import {
     FaRobot, FaBrain, FaLightbulb, FaPlay, FaChevronDown, FaChevronUp,
@@ -35,6 +35,30 @@ function InterviewPrep({ resumeData }) {
     const [userAnswers, setUserAnswers] = useState({});
     const [evaluations, setEvaluations] = useState({});
     const [evaluating, setEvaluating] = useState({});
+
+    const containerRef = useRef(null);
+
+    // Scroll Reveal Logic
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
+        );
+
+        if (containerRef.current) {
+            const elements = containerRef.current.querySelectorAll('.reveal');
+            elements.forEach((el) => observer.observe(el));
+        }
+
+        return () => observer.disconnect();
+    }, [questions, loading, resumeData]); // Re-run when content changes
 
     const availableSkills = resumeData?.skills || [];
 
@@ -211,14 +235,14 @@ function InterviewPrep({ resumeData }) {
     };
 
     return (
-        <div className="interview-prep-page">
-            <div className="page-header">
+        <div className="interview-prep-page" ref={containerRef}>
+            <div className="page-header reveal">
                 <h2><FaGraduationCap style={{ marginRight: '12px' }} />Interview Prep</h2>
                 <p>Practice interview questions tailored to your skills</p>
             </div>
 
             {!resumeData ? (
-                <div className="info-banner warning">
+                <div className="info-banner warning reveal">
                     <FaExclamationTriangle />
                     <p>
                         <a href="/">Upload your resume</a> first to get personalized interview questions based on your skills.
@@ -227,7 +251,7 @@ function InterviewPrep({ resumeData }) {
             ) : (
                 <>
                     {/* Skills Selection */}
-                    <div className="prep-section skills-section">
+                    <div className="prep-section skills-section reveal" style={{ transitionDelay: '0.1s' }}>
                         <div className="section-header">
                             <h3><FaCode style={{ marginRight: '8px' }} />Select Skills to Practice</h3>
                             <div className="section-actions">
@@ -253,7 +277,7 @@ function InterviewPrep({ resumeData }) {
                     </div>
 
                     {/* Options */}
-                    <div className="prep-section options-section">
+                    <div className="prep-section options-section reveal" style={{ transitionDelay: '0.2s' }}>
                         <div className="options-grid">
                             <div className="option-group">
                                 <label>Difficulty</label>
@@ -289,7 +313,7 @@ function InterviewPrep({ resumeData }) {
                     </div>
 
                     {/* Generate Button */}
-                    <div className="generate-section">
+                    <div className="generate-section reveal" style={{ transitionDelay: '0.3s' }}>
                         <button
                             className="btn btn-primary btn-generate"
                             onClick={generateQuestions}
@@ -311,7 +335,7 @@ function InterviewPrep({ resumeData }) {
 
                     {/* Error */}
                     {error && (
-                        <div className="error-message">
+                        <div className="error-message reveal">
                             <FaExclamationTriangle style={{ marginRight: '8px' }} />
                             {error}
                         </div>
@@ -319,7 +343,7 @@ function InterviewPrep({ resumeData }) {
 
                     {/* Loading State */}
                     {loading && (
-                        <div className="loading-state">
+                        <div className="loading-state reveal">
                             <div className="spinner"></div>
                             <h3>Generating Your Interview Questions</h3>
                             <p>AI is crafting personalized questions based on your skills...</p>
@@ -330,7 +354,7 @@ function InterviewPrep({ resumeData }) {
                     {!loading && questions.length > 0 && (
                         <div className="questions-section">
                             {summary && (
-                                <div className="questions-summary">
+                                <div className="questions-summary reveal">
                                     <span><strong>{summary.totalQuestions}</strong> questions</span>
                                     <span><FaClock style={{ marginRight: '4px' }} />{summary.estimatedDuration}</span>
                                     {askedQuestions.length > 0 && (
@@ -353,7 +377,7 @@ function InterviewPrep({ resumeData }) {
 
                             <div className="questions-list">
                                 {questions.map((q, index) => (
-                                    <div key={q.id || index} className="question-card">
+                                    <div key={q.id || index} className="question-card reveal" style={{ transitionDelay: `${index * 0.1}s` }}>
                                         <div
                                             className="question-header"
                                             onClick={() => toggleQuestion(q.id || index)}
@@ -444,7 +468,7 @@ function InterviewPrep({ resumeData }) {
 
                                         {/* Evaluation Results */}
                                         {evaluations[q.id || index] && !evaluations[q.id || index].error && (
-                                            <div className="evaluation-result">
+                                            <div className="evaluation-result reveal" style={{ animationDelay: '0.1s' }}>
                                                 <div className="evaluation-header">
                                                     <h5><FaStar style={{ marginRight: '6px', color: 'var(--warm)' }} />AI Evaluation</h5>
                                                     <div className="score-badge" style={{
@@ -496,7 +520,7 @@ function InterviewPrep({ resumeData }) {
 
                                         {/* Show Hints Only */}
                                         {showHints[q.id || index] && !expandedQuestions[q.id || index] && (
-                                            <div className="question-hints">
+                                            <div className="question-hints reveal">
                                                 <div className="answer-section">
                                                     <h5><FaLightbulb style={{ marginRight: '6px', color: 'var(--warm)' }} />Key Points</h5>
                                                     <ul className="answer-points">
@@ -516,7 +540,7 @@ function InterviewPrep({ resumeData }) {
 
                                         {/* Show Full Answer */}
                                         {expandedQuestions[q.id || index] && (
-                                            <div className="question-answer">
+                                            <div className="question-answer reveal">
                                                 {q.detailedAnswer && (
                                                     <div className="detailed-answer-section">
                                                         <h5><FaCheck style={{ marginRight: '6px', color: 'var(--status-success)' }} />Sample Answer</h5>
@@ -549,7 +573,7 @@ function InterviewPrep({ resumeData }) {
 
                     {/* Empty State */}
                     {!loading && questions.length === 0 && selectedSkills.length > 0 && !error && (
-                        <div className="empty-state">
+                        <div className="empty-state reveal">
                             <FaPlay style={{ fontSize: '3rem', marginBottom: '16px' }} />
                             <h3>Ready to Practice?</h3>
                             <p>Click "Generate Interview Questions" to get AI-powered questions based on your selected skills.</p>

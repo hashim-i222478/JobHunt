@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FaStar, FaPencilAlt, FaMicrophone, FaTrophy, FaTimes, FaBan, FaExclamationTriangle, FaClipboardList, FaMapMarkerAlt } from 'react-icons/fa';
 
@@ -18,6 +18,29 @@ function ApplicationTracker() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('all');
+    const containerRef = useRef(null);
+
+    // Scroll Reveal Logic
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
+        );
+
+        if (containerRef.current) {
+            const elements = containerRef.current.querySelectorAll('.reveal');
+            elements.forEach((el) => observer.observe(el));
+        }
+
+        return () => observer.disconnect();
+    }, [applications, filter, loading]); // Re-run when content changes
 
     useEffect(() => {
         fetchApplications();
@@ -82,13 +105,13 @@ function ApplicationTracker() {
     }
 
     return (
-        <div className="tracker-page">
-            <div className="page-header">
+        <div className="tracker-page" ref={containerRef}>
+            <div className="page-header reveal">
                 <h2>Application Tracker</h2>
                 <p>Track and manage your job applications in one place</p>
             </div>
 
-            <div className="tracker-stats">
+            <div className="tracker-stats reveal" style={{ transitionDelay: '0.1s' }}>
                 <button
                     className={`stat-card ${filter === 'all' ? 'active' : ''}`}
                     onClick={() => setFilter('all')}
@@ -111,13 +134,13 @@ function ApplicationTracker() {
             </div>
 
             {error && (
-                <div className="error-message">
+                <div className="error-message reveal">
                     <span><FaExclamationTriangle /></span> {error}
                 </div>
             )}
 
             {filteredApps.length === 0 ? (
-                <div className="empty-state">
+                <div className="empty-state reveal">
                     <span className="empty-icon"><FaClipboardList /></span>
                     <h3>No applications {filter !== 'all' ? `with "${STATUS_CONFIG[filter]?.label}" status` : 'yet'}</h3>
                     <p>
@@ -131,8 +154,8 @@ function ApplicationTracker() {
                 </div>
             ) : (
                 <div className="applications-list">
-                    {filteredApps.map(app => (
-                        <div key={app._id} className="application-card">
+                    {filteredApps.map((app, index) => (
+                        <div key={app._id} className="application-card reveal" style={{ transitionDelay: `${index * 0.05}s` }}>
                             <div className="app-main">
                                 <div className="app-header">
                                     {app.companyLogo ? (

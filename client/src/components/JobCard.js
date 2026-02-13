@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaMapMarkerAlt, FaBriefcase, FaHome, FaMoneyBillWave, FaCheck, FaStar } from 'react-icons/fa';
 
-function JobCard({ job, onSave, isSaved }) {
+function JobCard({ job, onSave, isSaved, className = '', style = {} }) {
     const truncateDescription = (text, maxLength = 200) => {
         if (!text) return '';
         return text.length > maxLength
@@ -16,7 +16,7 @@ function JobCard({ job, onSave, isSaved }) {
     };
 
     return (
-        <div className="job-card">
+        <div className={`job-card ${className}`} style={style}>
             {job.matchScore > 0 && (
                 <div
                     className="match-badge"

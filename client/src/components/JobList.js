@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import JobCard from './JobCard';
 import { FaRobot, FaSearch, FaCog, FaFileAlt, FaExclamationTriangle, FaDownload, FaSyncAlt, FaBolt, FaRocket, FaClipboardList } from 'react-icons/fa';
@@ -55,6 +55,30 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
     // Result filters for AI mode (client-side filtering)
     const [filterJobType, setFilterJobType] = useState('');
     const [filterRemote, setFilterRemote] = useState(false);
+
+    const containerRef = useRef(null);
+
+    // Scroll Reveal Logic (MOVED HERE)
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1, rootMargin: '0px 0px -20px 0px' }
+        );
+
+        if (containerRef.current) {
+            const elements = containerRef.current.querySelectorAll('.reveal');
+            elements.forEach((el) => observer.observe(el));
+        }
+
+        return () => observer.disconnect();
+    }, [jobs, aiInsights, searchMode, loading]); // Re-run when content changes
 
     // Get device location on mount if no location set
     useEffect(() => {
@@ -286,8 +310,8 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
     };
 
     return (
-        <div className="job-list-page">
-            <div className="page-header">
+        <div className="job-list-page" ref={containerRef}>
+            <div className="page-header reveal">
                 <h2>AI-Powered Job Matches</h2>
                 <p>
                     {resumeData
@@ -297,7 +321,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
             </div>
 
             {/* Search Mode Toggle */}
-            <div className="search-mode-toggle">
+            <div className="search-mode-toggle reveal" style={{ transitionDelay: '0.1s' }}>
                 <button
                     className={`mode-btn ${searchMode === 'ai' ? 'active' : ''}`}
                     onClick={() => handleModeSwitch('ai')}
@@ -313,7 +337,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
             </div>
 
             {/* Search Controls */}
-            <div className="search-controls">
+            <div className="search-controls reveal" style={{ transitionDelay: '0.2s' }}>
                 {/* Main Search Fields */}
                 <div className="search-fields">
                     {searchMode === 'manual' && (
@@ -367,7 +391,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
 
             {/* Advanced Filters Panel - Only for Manual Mode */}
             {showAdvanced && searchMode === 'manual' && (
-                <div className="advanced-filters">
+                <div className="advanced-filters reveal">
                     <div className="filter-group">
                         <label>Experience Level</label>
                         <select value={experience} onChange={(e) => setExperience(e.target.value)}>
@@ -407,7 +431,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
 
             {/* AI Insights Panel */}
             {aiInsights && searchMode === 'ai' && (
-                <div className="ai-insights">
+                <div className="ai-insights reveal">
                     <h3><FaRobot style={{ marginRight: '8px' }} /> AI Search Analysis</h3>
                     <div className="insights-grid">
                         {aiInsights.jobTitles?.length > 0 && (
@@ -441,7 +465,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
             )}
 
             {!resumeData && searchMode === 'ai' && (
-                <div className="info-banner">
+                <div className="info-banner reveal">
                     <span><FaFileAlt /></span>
                     <p>
                         <a href="/">Upload your resume</a> for AI-powered matching, or switch to <strong>Manual Search</strong> to search by job title.
@@ -450,13 +474,13 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
             )}
 
             {error && (
-                <div className="error-message">
+                <div className="error-message reveal">
                     <span><FaExclamationTriangle /></span> {error}
                 </div>
             )}
 
             {loading && (
-                <div className="loading-state">
+                <div className="loading-state reveal">
                     <div className="spinner"></div>
                     <h3>Finding Jobs in {location || 'your area'}</h3>
                     <p><FaRobot style={{ marginRight: '6px' }} /> {searchMode === 'ai' ? 'AI is analyzing jobs' : `Searching for "${manualQuery}"`}...</p>
@@ -472,7 +496,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
 
             {!loading && jobs.length > 0 && (
                 <>
-                    <div className="results-header">
+                    <div className="results-header reveal">
                         <div className="results-info">
                             <span className="results-count">Found <strong>{filteredJobs.length}</strong> jobs</span>
                             {location && <span className="results-location">in <strong>{location}</strong></span>}
@@ -490,7 +514,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
 
                     {/* Result Filters for AI Mode */}
                     {searchMode === 'ai' && (
-                        <div className="result-filters">
+                        <div className="result-filters reveal">
                             <span className="filter-label">Filter results:</span>
                             <select
                                 value={filterJobType}
@@ -527,13 +551,15 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
                                 job={job}
                                 onSave={() => saveJob(job)}
                                 isSaved={savedJobs.has(job.externalId)}
+                                className="reveal"
+                                style={{ transitionDelay: `${(index % 10) * 0.05}s` }}
                             />
                         ))}
                     </div>
 
                     {/* Load More Button */}
                     {hasMore && (
-                        <div className="load-more-section">
+                        <div className="load-more-section reveal">
                             <button
                                 onClick={() => searchJobs(true)}
                                 disabled={loadingMore}
@@ -555,7 +581,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
                     )}
 
                     {!hasMore && jobs.length > 0 && (
-                        <div className="no-more-jobs">
+                        <div className="no-more-jobs reveal">
                             <span>✓ You've seen all {jobs.length} jobs in {location}</span>
                         </div>
                     )}
@@ -563,7 +589,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
             )}
 
             {!loading && jobs.length === 0 && hasSearched && (
-                <div className="empty-state">
+                <div className="empty-state reveal">
                     <span className="empty-icon"><FaSearch /></span>
                     <h3>No jobs found in {location}</h3>
                     <p>Try a different {searchMode === 'manual' ? 'search term or ' : ''}location</p>
@@ -574,7 +600,7 @@ function JobList({ resumeData, jobs, setJobs, loading, setLoading }) {
             )}
 
             {!loading && jobs.length === 0 && !hasSearched && (
-                <div className="empty-state">
+                <div className="empty-state reveal">
                     <img src={require('../Logo.png')} alt="JobHunt AI" className="empty-icon-img" style={{ width: '64px', height: 'auto', marginBottom: '16px', opacity: 0.8 }} />
                     <h3>Ready to find jobs</h3>
                     <p>
