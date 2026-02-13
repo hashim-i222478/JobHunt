@@ -8,6 +8,8 @@ require('dotenv').config();
 const resumeRoutes = require('./routes/resume');
 const jobRoutes = require('./routes/jobs');
 const interviewRoutes = require('./routes/interview');
+const coverLetterRoutes = require('./routes/coverLetter');
+const coldEmailRoutes = require('./routes/coldEmail');
 
 const app = express();
 
@@ -46,6 +48,8 @@ app.get('/api/health', (req, res) => {
 app.use('/api/resume', resumeRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/interview', interviewRoutes);
+app.use('/api/cover-letter', coverLetterRoutes);
+app.use('/api/cold-email', coldEmailRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

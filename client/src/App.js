@@ -4,13 +4,19 @@ import ResumeUpload from './components/ResumeUpload';
 import JobList from './components/JobList';
 import ApplicationTracker from './components/ApplicationTracker';
 import InterviewPrep from './components/InterviewPrep';
+import CoverLetter from './components/CoverLetter';
+import ColdEmail from './components/ColdEmail';
 import Logo from './Logo.png';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import './App.css';
 
 function App() {
   const [resumeData, setResumeData] = React.useState(null);
   const [jobs, setJobs] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <Router>
@@ -21,20 +27,30 @@ function App() {
               <img src={Logo} alt="JobHunt AI Logo" className="logo-image" />
               JobHunt<span className="accent">AI</span>
             </h1>
-            <nav className="nav">
-              <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+            <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
+              {menuOpen ? <FaTimes /> : <FaBars />}
+            </button>
+            <nav className={`nav ${menuOpen ? 'nav-open' : ''}`}>
+              <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMenu}>
                 Upload Resume
               </NavLink>
-              <NavLink to="/jobs" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <NavLink to="/jobs" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMenu}>
                 Find Jobs
               </NavLink>
-              <NavLink to="/interview" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <NavLink to="/interview" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMenu}>
                 Interview Prep
               </NavLink>
-              <NavLink to="/tracker" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <NavLink to="/tracker" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMenu}>
                 Tracker
               </NavLink>
+              <NavLink to="/cover-letter" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMenu}>
+                Cover Letter
+              </NavLink>
+              <NavLink to="/cold-email" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={closeMenu}>
+                Cold Email
+              </NavLink>
             </nav>
+            {menuOpen && <div className="nav-overlay" onClick={closeMenu}></div>}
           </div>
         </header>
 
@@ -69,6 +85,14 @@ function App() {
             <Route
               path="/tracker"
               element={<ApplicationTracker />}
+            />
+            <Route
+              path="/cover-letter"
+              element={<CoverLetter resumeData={resumeData} />}
+            />
+            <Route
+              path="/cold-email"
+              element={<ColdEmail resumeData={resumeData} />}
             />
           </Routes>
         </main>
