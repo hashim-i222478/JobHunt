@@ -24,8 +24,24 @@
 
 ### 4. 📊 Application Tracker
 - **Kanban-Style Tracking**: Manage your applications through stages: Saved, Applied, Interviewing, Offer, Rejected.
-- **Statistics**: Visual breakdown of your application progress.
+- **Visual Dashboard**: **New!** animated statistics and progress bars to keep you motivated.
 - **Notes & Updates**: Keep track of interview dates and follow-ups.
+- **History Timeline**: View your application activity over time.
+
+### 5. ✍️ Smart Cover Letter
+- **Tailored Content**: Generates professional cover letters customized for specific job descriptions and your resume.
+- **Tone Selection**: Choose from Professional, Enthusiastic, or Confident tones.
+- **AI Tips**: Get real-time advice on how to improve your letter.
+
+### 6. 📧 Cold Email Generator
+- **Outreach Made Easy**: Craft compelling cold emails to recruiters and hiring managers.
+- **Templates**: Proven templates for various scenarios (Introduction, Follow-up, Networking).
+- **Customizable**: Adapts to the recipient's role and company.
+
+### 7. 🎨 Premium UI/UX
+- **"Obsidian Forge" Design System**: A sleek, dark-mode aesthetic with vibrant "Electric Cyan" and "Warm Orange" accents.
+- **Smooth Animations**: Scroll-reveal effects and micro-interactions make the interface feel alive.
+- **Sidebar Navigation**: Collapsible, responsive sidebar for seamless navigation on any device.
 
 ## 🛠️ Tech Stack
 
@@ -91,8 +107,8 @@
 
 ## 🔮 Future Roadmap
 - 🎤 **Voice Interview Mode**: Speak your answers and get audio feedback.
-- 📧 **Cold Email Generator**: AI-crafted messages to recruiters.
 - 🗺️ **Career Roadmap**: Visual path to reach your dream role.
+- 🧩 **Browser Extension**: Save jobs directly from LinkedIn and Indeed.
 
 ## 🤝 Contributing
 Contributions are welcome! Fork the repo and submit a PR.
