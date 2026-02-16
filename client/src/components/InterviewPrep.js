@@ -468,7 +468,7 @@ function InterviewPrep({ resumeData }) {
 
                                         {/* Evaluation Results */}
                                         {evaluations[q.id || index] && !evaluations[q.id || index].error && (
-                                            <div className="evaluation-result reveal" style={{ animationDelay: '0.1s' }}>
+                                            <div className="evaluation-result fade-in" style={{ animationDelay: '0.1s' }}>
                                                 <div className="evaluation-header">
                                                     <h5><FaStar style={{ marginRight: '6px', color: 'var(--warm)' }} />AI Evaluation</h5>
                                                     <div className="score-badge" style={{
@@ -520,7 +520,7 @@ function InterviewPrep({ resumeData }) {
 
                                         {/* Show Hints Only */}
                                         {showHints[q.id || index] && !expandedQuestions[q.id || index] && (
-                                            <div className="question-hints reveal">
+                                            <div className="question-hints fade-in">
                                                 <div className="answer-section">
                                                     <h5><FaLightbulb style={{ marginRight: '6px', color: 'var(--warm)' }} />Key Points</h5>
                                                     <ul className="answer-points">
@@ -540,7 +540,7 @@ function InterviewPrep({ resumeData }) {
 
                                         {/* Show Full Answer */}
                                         {expandedQuestions[q.id || index] && (
-                                            <div className="question-answer reveal">
+                                            <div className="question-answer fade-in">
                                                 {q.detailedAnswer && (
                                                     <div className="detailed-answer-section">
                                                         <h5><FaCheck style={{ marginRight: '6px', color: 'var(--status-success)' }} />Sample Answer</h5>

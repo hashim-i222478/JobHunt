@@ -11,9 +11,9 @@
 - **Smart Feedback**: AI analyzes your resume to suggest improvements and highlight strengths.
 - **Role Matching**: Automatically suggests job roles that fit your profile.
 
-### 2. 🔍 Intelligent Job Search
-- **AI-Powered Matching**: Finds jobs that actually match your skills and experience level using JSearch API.
-- **Smart Filters**: Filter by remote, full-time, salary, and more.
+### 2. 🔍 Smart Job Search Aggregator
+- **Multi-Platform Search**: Aggregates listings from LinkedIn, Indeed, Glassdoor (via JSearch API).
+- **One-Click Tailoring**: Instantly launch the **Resume Tailor** for any job listing.
 - **Match Score**: See how well you fit a job description at a glance.
 
 ### 3. 🎯 Interview Preparation
@@ -42,6 +42,16 @@
 - **"Obsidian Forge" Design System**: A sleek, dark-mode aesthetic with vibrant "Electric Cyan" and "Warm Orange" accents.
 - **Smooth Animations**: Scroll-reveal effects and micro-interactions make the interface feel alive.
 - **Sidebar Navigation**: Collapsible, responsive sidebar for seamless navigation on any device.
+
+### 8. 🗺️ Interactive Career Roadmap
+- **Visual Journey**: Maps your path from current role to dream job using React Flow.
+- **AI Milestones**: Generates step-by-step learning goals with time estimates.
+- **Gamification**: Track your progress and unlock achievements as you grow.
+
+### 9. 🦎 AI Resume Tailor (Chameleon Mode)
+- **Job Description Analysis**: instantly compares your resume against a specific JD.
+- **Smart Rewrites**: Suggests ATS-optimized bullet points to match keywords.
+- **Live Preview**: See your tailored resume update in real-time.
 
 ## 🛠️ Tech Stack
 

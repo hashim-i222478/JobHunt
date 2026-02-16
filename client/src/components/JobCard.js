@@ -1,7 +1,19 @@
 import React from 'react';
-import { FaMapMarkerAlt, FaBriefcase, FaHome, FaMoneyBillWave, FaCheck, FaStar } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaBriefcase, FaHome, FaMoneyBillWave, FaCheck, FaStar, FaMagic } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 function JobCard({ job, onSave, isSaved, className = '', style = {} }) {
+    const navigate = useNavigate();
+
+    const handleTailorClick = () => {
+        // Navigate to tailor page with job description pre-filled
+        navigate('/resume-tailor', {
+            state: {
+                jobDescription: job.description || `${job.title} at ${job.company}`
+            }
+        });
+    };
+
     const truncateDescription = (text, maxLength = 200) => {
         if (!text) return '';
         return text.length > maxLength
@@ -79,6 +91,16 @@ function JobCard({ job, onSave, isSaved, className = '', style = {} }) {
                 >
                     {isSaved ? <><FaCheck style={{ marginRight: '4px' }} /> Saved</> : <><FaStar style={{ marginRight: '4px' }} /> Save</>}
                 </button>
+
+                <button
+                    onClick={handleTailorClick}
+                    className="btn btn-secondary"
+                    style={{ marginRight: '8px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                    title="Tailor Resume to this Job"
+                >
+                    <FaMagic /> Tailor
+                </button>
+
                 {job.applyLink && (
                     <a
                         href={job.applyLink}

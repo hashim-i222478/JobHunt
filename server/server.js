@@ -10,6 +10,7 @@ const jobRoutes = require('./routes/jobs');
 const interviewRoutes = require('./routes/interview');
 const coverLetterRoutes = require('./routes/coverLetter');
 const coldEmailRoutes = require('./routes/coldEmail');
+const careerRoadmapRoutes = require('./routes/careerRoadmapRoutes');
 
 const app = express();
 
@@ -50,6 +51,8 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/interview', interviewRoutes);
 app.use('/api/cover-letter', coverLetterRoutes);
 app.use('/api/cold-email', coldEmailRoutes);
+app.use('/api/tailor', require('./routes/resumeTailorRoutes'));
+app.use('/api/roadmap', careerRoadmapRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
