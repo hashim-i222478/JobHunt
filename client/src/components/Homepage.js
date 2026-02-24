@@ -28,13 +28,6 @@ const FEATURES = [
         color: '#ff6b35',
     },
     {
-        icon: FaClipboardList,
-        title: 'Application Tracker',
-        description: 'Track all your job applications in one place with status updates, notes, and timeline view.',
-        link: '/tracker',
-        color: '#ffb800',
-    },
-    {
         icon: FaEnvelopeOpenText,
         title: 'Cover Letter',
         description: 'Generate professional, tailored cover letters that highlight your best skills for each position.',

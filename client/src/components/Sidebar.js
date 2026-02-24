@@ -23,7 +23,6 @@ function Sidebar() {
         { path: '/', label: 'Home', icon: FaHome },
         { path: '/resume', label: 'Resume', icon: FaFileUpload },
         { path: '/jobs', label: 'Find Jobs', icon: FaBriefcase },
-        { path: '/tracker', label: 'Tracker', icon: FaListUl },
         { path: '/interview', label: 'Interview Prep', icon: FaUserTie },
         { path: '/cover-letter', label: 'Cover Letter', icon: FaEnvelope },
         { path: '/cold-email', label: 'Cold Email', icon: FaEnvelope },
@@ -34,15 +33,15 @@ function Sidebar() {
     return (
         <>
             {/* Mobile Toggle Button */}
-            <button className="mobile-menu-toggle" onClick={toggleSidebar}>
-                {isOpen ? <FaTimes /> : <FaBars />}
+            <button className={`mobile-menu-toggle ${isOpen ? 'menu-hidden' : ''}`} onClick={toggleSidebar}>
+                <FaBars />
             </button>
 
             {/* Sidebar Container */}
-            <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+            <div className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
                 <div className="sidebar-header">
                     <div className="sidebar-brand">
-                        <FaRocket className="brand-icon" />
+                        <img src="/logo.png" alt="JobHuntAI Logo" className="brand-logo" style={{ height: '40px', width: 'auto', marginRight: '10px' }} />
                         <span>JobHunt<span className="accent">AI</span></span>
                     </div>
                 </div>

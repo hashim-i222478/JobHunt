@@ -7,7 +7,6 @@ import Sidebar from './components/Sidebar';
 import Homepage from './components/Homepage';
 import ResumeUpload from './components/ResumeUpload';
 import JobList from './components/JobList';
-import ApplicationTracker from './components/ApplicationTracker';
 import InterviewPrep from './components/InterviewPrep';
 import CoverLetter from './components/CoverLetter';
 // ... (keep existing imports)
@@ -63,7 +62,6 @@ function AppContent() {
             }
           />
           <Route path="/interview" element={<InterviewPrep resumeData={resumeData} />} />
-          <Route path="/tracker" element={<ApplicationTracker />} />
           <Route path="/cover-letter" element={<CoverLetter resumeData={resumeData} />} />
           <Route path="/cold-email" element={<ColdEmail resumeData={resumeData} />} />
           <Route path="/resume-tailor" element={<ResumeTailor resumeData={resumeData} />} />
