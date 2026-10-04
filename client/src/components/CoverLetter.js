@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FaFileAlt, FaPaperPlane, FaCopy, FaDownload, FaCheckCircle, FaExclamationTriangle, FaBriefcase, FaBuilding, FaUserTie, FaLightbulb, FaStar, FaFire, FaBolt } from 'react-icons/fa';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const POSITION_TYPES = [
     { value: 'Full-time', label: 'Full-time' },

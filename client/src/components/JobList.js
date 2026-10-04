@@ -3,7 +3,7 @@ import axios from 'axios';
 import JobCard from './JobCard';
 import { FaRobot, FaSearch, FaCog, FaFileAlt, FaExclamationTriangle, FaDownload, FaSyncAlt, FaBolt, FaRocket, FaClipboardList } from 'react-icons/fa';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 // Experience level options (JSearch API values)
 const EXPERIENCE_LEVELS = [

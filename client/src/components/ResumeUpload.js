@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaFileAlt, FaRobot, FaSearch, FaBriefcase, FaGraduationCap, FaTools, FaLink, FaExclamationTriangle, FaBullseye, FaCalendarAlt } from 'react-icons/fa';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
     const [uploading, setUploading] = useState(false);
