@@ -119,9 +119,9 @@ const generateRoadmap = async (currentRole, targetRole, currentSkills) => {
         `;
 
         const response = await axios.post(
-            'https://api.groq.com/openai/v1/chat/completions',
+            process.env.AZURE_OPENAI_URL,
             {
-                model: "llama-3.3-70b-versatile",
+                model: "gpt-4.1-mini",
                 messages: [
                     { role: "system", content: "You are an expert career coach and technical mentor. Return valid JSON only. Do NOT include any URLs — only provide title and searchQuery for resources." },
                     { role: "user", content: prompt }
@@ -131,7 +131,7 @@ const generateRoadmap = async (currentRole, targetRole, currentSkills) => {
             },
             {
                 headers: {
-                    'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+                    'api-key': process.env.AZURE_OPENAI_KEY,
                     'Content-Type': 'application/json'
                 }
             }

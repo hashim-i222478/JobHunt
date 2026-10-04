@@ -1,7 +1,7 @@
 const axios = require('axios');
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const AZURE_OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
+const AZURE_OPENAI_URL = process.env.AZURE_OPENAI_URL;
 
 /**
  * Generate interview questions based on skills and role
@@ -12,8 +12,8 @@ const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
  * @returns {Promise<Object>} Generated questions
  */
 async function generateInterviewQuestions(skills, role = '', difficulty = 'medium', category = 'all', excludeQuestions = []) {
-    if (!GROQ_API_KEY) {
-        throw new Error('GROQ_API_KEY not configured');
+    if (!AZURE_OPENAI_KEY) {
+        throw new Error('AZURE_OPENAI_KEY not configured');
     }
 
     const skillsList = skills.slice(0, 10).join(', '); // Limit to top 10 skills
@@ -74,9 +74,9 @@ Return ONLY valid JSON:
 
     try {
         const response = await axios.post(
-            GROQ_URL,
+            AZURE_OPENAI_URL,
             {
-                model: 'llama-3.3-70b-versatile',
+                model: "gpt-4.1-mini",
                 messages: [
                     {
                         role: 'system',
@@ -92,7 +92,7 @@ Return ONLY valid JSON:
             },
             {
                 headers: {
-                    'Authorization': `Bearer ${GROQ_API_KEY}`,
+                    'api-key': AZURE_OPENAI_KEY,
                     'Content-Type': 'application/json'
                 }
             }
@@ -129,8 +129,8 @@ Return ONLY valid JSON:
  * @returns {Promise<Object>} Evaluation result
  */
 async function evaluateAnswer(question, answer, expectedPoints) {
-    if (!GROQ_API_KEY) {
-        throw new Error('GROQ_API_KEY not configured');
+    if (!AZURE_OPENAI_KEY) {
+        throw new Error('AZURE_OPENAI_KEY not configured');
     }
 
     const prompt = `You are an interview coach evaluating a candidate's answer.
@@ -157,9 +157,9 @@ Return ONLY valid JSON:
 
     try {
         const response = await axios.post(
-            GROQ_URL,
+            AZURE_OPENAI_URL,
             {
-                model: 'llama-3.3-70b-versatile',
+                model: "gpt-4.1-mini",
                 messages: [
                     {
                         role: 'system',
@@ -175,7 +175,7 @@ Return ONLY valid JSON:
             },
             {
                 headers: {
-                    'Authorization': `Bearer ${GROQ_API_KEY}`,
+                    'api-key': AZURE_OPENAI_KEY,
                     'Content-Type': 'application/json'
                 }
             }

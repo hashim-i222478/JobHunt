@@ -1,8 +1,8 @@
 const pdfParse = require('pdf-parse');
 const axios = require('axios');
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const AZURE_OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
+const AZURE_OPENAI_URL = process.env.AZURE_OPENAI_URL;
 
 /**
  * Extract actual hyperlink URLs from PDF annotations using pdfjs-dist
@@ -84,7 +84,7 @@ async function parsePDF(pdfBuffer) {
 
         // AI Analysis (if API key available)
         let aiAnalysis = null;
-        if (GROQ_API_KEY) {
+        if (AZURE_OPENAI_KEY) {
             aiAnalysis = await analyzeResumeWithAI(text);
         }
 
@@ -107,7 +107,7 @@ async function parsePDF(pdfBuffer) {
             location: detectedLocation,
             pageCount: data.numpages,
             aiAnalysis: aiAnalysis || {
-                summary: 'AI analysis unavailable. Please add a Groq API key.',
+                summary: 'AI analysis unavailable. Please add a GitHub API key.',
                 suggestedRoles: [],
                 categorizedSkills: { Technical: basicSkills },
                 timeline: [],
@@ -179,8 +179,8 @@ Rules:
 - Return ONLY the JSON object, nothing else`;
 
     try {
-        const response = await axios.post(GROQ_URL, {
-            model: "llama-3.3-70b-versatile",
+        const response = await axios.post(AZURE_OPENAI_URL, {
+            model: "gpt-4.1-mini",
             messages: [
                 {
                     role: "user",
@@ -191,7 +191,7 @@ Rules:
             max_tokens: 2000
         }, {
             headers: {
-                'Authorization': `Bearer ${GROQ_API_KEY}`,
+                'api-key': AZURE_OPENAI_KEY,
                 'Content-Type': 'application/json'
             }
         });

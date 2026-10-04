@@ -1,7 +1,7 @@
 const axios = require('axios');
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const AZURE_OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
+const AZURE_OPENAI_URL = process.env.AZURE_OPENAI_URL;
 
 /**
  * Generate a professional cover letter using AI
@@ -9,8 +9,8 @@ const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
  * @returns {Promise<Object>} Generated cover letter
  */
 async function generateCoverLetter({ resumeData, jobTitle, companyName, jobDescription, position, experienceLevel, tone }) {
-    if (!GROQ_API_KEY) {
-        throw new Error('GROQ_API_KEY not configured');
+    if (!AZURE_OPENAI_KEY) {
+        throw new Error('AZURE_OPENAI_KEY not configured');
     }
 
     // Build resume context from parsed data
@@ -73,8 +73,8 @@ Return ONLY valid JSON in this exact format:
 }`;
 
     try {
-        const response = await axios.post(GROQ_URL, {
-            model: 'llama-3.3-70b-versatile',
+        const response = await axios.post(AZURE_OPENAI_URL, {
+            model: "gpt-4.1-mini",
             messages: [
                 {
                     role: 'system',
@@ -86,7 +86,7 @@ Return ONLY valid JSON in this exact format:
             max_tokens: 4000
         }, {
             headers: {
-                'Authorization': `Bearer ${GROQ_API_KEY}`,
+                'api-key': AZURE_OPENAI_KEY,
                 'Content-Type': 'application/json'
             }
         });

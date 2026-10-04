@@ -1,14 +1,14 @@
 const axios = require('axios');
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const AZURE_OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
+const AZURE_OPENAI_URL = process.env.AZURE_OPENAI_URL;
 
 /**
  * Use AI to analyze resume and generate optimal job search queries
  */
 async function analyzeResumeForJobSearch(skills, experience, rawText) {
-    if (!GROQ_API_KEY) {
-        console.log('No Groq API key, using basic search');
+    if (!AZURE_OPENAI_KEY) {
+        console.log('No GitHub API key, using basic search');
         return { queries: skills.slice(0, 3), jobTitles: [], seniority: 'mid' };
     }
 
@@ -27,8 +27,8 @@ Return a JSON object with:
 Return ONLY valid JSON, no markdown or explanation.`;
 
     try {
-        const response = await axios.post(GROQ_URL, {
-            model: "llama-3.3-70b-versatile",
+        const response = await axios.post(AZURE_OPENAI_URL, {
+            model: "gpt-4.1-mini",
             messages: [
                 {
                     role: "user",
@@ -39,7 +39,7 @@ Return ONLY valid JSON, no markdown or explanation.`;
             max_tokens: 500
         }, {
             headers: {
-                'Authorization': `Bearer ${GROQ_API_KEY}`,
+                'api-key': AZURE_OPENAI_KEY,
                 'Content-Type': 'application/json'
             }
         });

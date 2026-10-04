@@ -1,7 +1,7 @@
 const axios = require('axios');
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const AZURE_OPENAI_KEY = process.env.AZURE_OPENAI_KEY;
+const AZURE_OPENAI_URL = process.env.AZURE_OPENAI_URL;
 
 /**
  * Tailor the resume based on the provided job description.
@@ -10,8 +10,8 @@ const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
  * @returns {Promise<Object>} - The analysis result containing missing keywords and rewrites.
  */
 async function tailorResume(resumeText, jobDescription) {
-  if (!GROQ_API_KEY) {
-    throw new Error('GROQ_API_KEY is not configured.');
+  if (!AZURE_OPENAI_KEY) {
+    throw new Error('AZURE_OPENAI_KEY is not configured.');
   }
 
   const prompt = `You are an elite Resume Strategist, ATS optimization expert, and Career Coach.
@@ -66,8 +66,8 @@ Rules:
 7. Return ONLY valid JSON. No markdown, no code blocks, no extra text.`;
 
   try {
-    const response = await axios.post(GROQ_URL, {
-      model: "llama-3.3-70b-versatile",
+    const response = await axios.post(AZURE_OPENAI_URL, {
+      model: "gpt-4.1-mini",
       messages: [
         {
           role: "system",
@@ -82,7 +82,7 @@ Rules:
       max_tokens: 3000
     }, {
       headers: {
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
+        'api-key': AZURE_OPENAI_KEY,
         'Content-Type': 'application/json'
       }
     });

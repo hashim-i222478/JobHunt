@@ -104,15 +104,94 @@ function ResumeUpload({ onUploadSuccess, resumeData, onJobsFound }) {
                 <div
                     {...getRootProps()}
                     onClick={open}
-                    className={`dropzone reveal ${isDragActive ? 'active' : ''} ${uploading ? 'uploading' : ''}`}
+                    className={`dropzone ${isDragActive ? 'active' : ''} ${uploading ? 'uploading' : ''}`}
                 >
                     <input {...getInputProps()} />
                     <div className="dropzone-content">
                         {uploading ? (
-                            <>
-                                <div className="spinner"></div>
-                                <p>{status || 'Processing...'}</p>
-                            </>
+                            <div className="ai-loading-container">
+                                <style>{`
+                                    .ai-loading-container {
+                                        display: flex;
+                                        flex-direction: column;
+                                        align-items: center;
+                                        justify-content: center;
+                                        padding: 3rem 1rem;
+                                        gap: 1.5rem;
+                                    }
+                                    .ai-pulse-ring {
+                                        position: relative;
+                                        width: 80px;
+                                        height: 80px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                    }
+                                    .ai-pulse-ring::before, .ai-pulse-ring::after {
+                                        content: '';
+                                        position: absolute;
+                                        width: 100%;
+                                        height: 100%;
+                                        border-radius: 50%;
+                                        border: 2px solid #00f2fe;
+                                        animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+                                    }
+                                    .ai-pulse-ring::after {
+                                        animation-delay: 1s;
+                                    }
+                                    .ai-icon-core {
+                                        font-size: 2.5rem;
+                                        color: #4facfe;
+                                        z-index: 2;
+                                        animation: float-icon 3s ease-in-out infinite;
+                                    }
+                                    .ai-status-text {
+                                        font-size: 1.25rem;
+                                        font-weight: 600;
+                                        background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+                                        -webkit-background-clip: text;
+                                        -webkit-text-fill-color: transparent;
+                                        animation: pulse-opacity 1.5s ease-in-out infinite alternate;
+                                    }
+                                    .ai-progress-bar {
+                                        width: 250px;
+                                        height: 4px;
+                                        background: rgba(255,255,255,0.1);
+                                        border-radius: 4px;
+                                        overflow: hidden;
+                                        position: relative;
+                                    }
+                                    .ai-progress-bar::after {
+                                        content: '';
+                                        position: absolute;
+                                        top: 0; left: 0; bottom: 0;
+                                        width: 40%;
+                                        background: linear-gradient(to right, transparent, #00f2fe, transparent);
+                                        animation: scan-bar 1.5s linear infinite;
+                                    }
+                                    @keyframes pulse-ring {
+                                        0% { transform: scale(0.8); opacity: 0.8; }
+                                        100% { transform: scale(2); opacity: 0; }
+                                    }
+                                    @keyframes float-icon {
+                                        0%, 100% { transform: translateY(0); }
+                                        50% { transform: translateY(-10px); }
+                                    }
+                                    @keyframes pulse-opacity {
+                                        0% { opacity: 0.6; }
+                                        100% { opacity: 1; }
+                                    }
+                                    @keyframes scan-bar {
+                                        0% { transform: translateX(-100%); }
+                                        100% { transform: translateX(300%); }
+                                    }
+                                `}</style>
+                                <div className="ai-pulse-ring">
+                                    <FaRobot className="ai-icon-core" />
+                                </div>
+                                <p className="ai-status-text">{status || 'AI is analyzing your resume...'}</p>
+                                <div className="ai-progress-bar"></div>
+                            </div>
                         ) : (
                             <>
                                 <div className="upload-icon"><FaFileAlt /></div>
